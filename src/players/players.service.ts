@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpException, Injectable, Logger } from "@nestjs/common";
 import { CreatePlayerDTO } from "./dtos/create-player.dto";
 import { IPlayer } from "./interfaces/players.interface";
 import { v4 as uuid } from "uuid";
@@ -49,5 +49,16 @@ export class PlayersService {
 
   async getPlayers(): Promise<IPlayer[]> {
     return await this.players;
+  }
+
+  async getPlayersByEmail(email: string): Promise<IPlayer[]> {
+    const player = await this.players.filter(
+      (player) => player.email === email,
+    );
+    if (!player || player.length === 0) {
+      throw new HttpException(`Player com ${email} não foi encontrado`, 404);
+    }
+
+    return player;
   }
 }
